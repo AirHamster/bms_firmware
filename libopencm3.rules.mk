@@ -92,8 +92,7 @@ endif
 include $(OPENCM3_DIR)/mk/genlink-config.mk
 endif
 
-OPENCM3_SCRIPT_DIR = $(OPENCM3_DIR)/scripts
-EXAMPLES_SCRIPT_DIR	= $(OPENCM3_DIR)/../scripts
+SCRIPT_DIR	= $(OPENCM3_DIR)/scripts
 
 ###############################################################################
 # C flags
@@ -216,7 +215,7 @@ styleclean: $(STYLECHECKFILES:=.styleclean)
 
 # the cat is due to multithreaded nature - we like to have consistent chunks of text on the output
 %.stylecheck: %
-	$(Q)$(OPENCM3_SCRIPT_DIR)$(STYLECHECK) $(STYLECHECKFLAGS) $* > $*.stylecheck; \
+	$(Q)$(SCRIPT_DIR)$(STYLECHECK) $(STYLECHECKFLAGS) $* > $*.stylecheck; \
 		if [ -s $*.stylecheck ]; then \
 			cat $*.stylecheck; \
 		else \
@@ -231,6 +230,7 @@ styleclean: $(STYLECHECKFILES:=.styleclean)
 	@printf "  FLASH  $<\n"
 	$(STFLASH) write $(*).bin 0x8000000
 
+ifeq ($(STLINK_PORT),)
 ifeq ($(BMP_PORT),)
 ifeq ($(OOCD_FILE),)
 %.flash: %.elf
@@ -253,7 +253,15 @@ else
 	@printf "  GDB   $(*).elf (flash)\n"
 	$(GDB) --batch \
 		   -ex 'target extended-remote $(BMP_PORT)' \
-		   -x $(EXAMPLES_SCRIPT_DIR)/black_magic_probe_flash.scr \
+		   -x $(SCRIPT_DIR)/black_magic_probe_flash.scr \
+		   $(*).elf
+endif
+else
+%.flash: %.elf
+	@printf "  GDB   $(*).elf (flash)\n"
+	$(GDB) --batch \
+		   -ex 'target extended-remote $(STLINK_PORT)' \
+		   -x $(SCRIPT_DIR)/stlink_flash.scr \
 		   $(*).elf
 endif
 

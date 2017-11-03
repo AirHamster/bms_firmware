@@ -2,7 +2,6 @@
 ## This file is part of the libopencm3 project.
 ##
 ## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
-## Copyright (C) 2010 Piotr Esden-Tempski <piotr@esden.net>
 ##
 ## This library is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU Lesser General Public License as published by
@@ -18,27 +17,13 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-LIBNAME		= opencm3_stm32f1
-DEFS		+= -DSTM32F1
+ BINARY = mainbms
+OBJS = gpio.o rcc.o uart.o can.o adc.o
+ ## CSRC	= mainbms.c gpio.c rcc.c
+##SOURCES= mainbms.c gpio.c rcc.c
 
-FP_FLAGS	?= -msoft-float
-ARCH_FLAGS	= -mthumb -mcpu=cortex-m3 $(FP_FLAGS) -mfix-cortex-m3-ldrd
++OPENCM3_DIR=./libopencm3
+ 
+ LDSCRIPT = $(OPENCM3_DIR)/lib/stm32/f1/stm32f103x8.ld
 
-################################################################################
-# OpenOCD specific variables
-
-OOCD		?= openocd
-OOCD_INTERFACE	?= flossjtag
-OOCD_TARGET	?= stm32f1x
-
-################################################################################
-# Black Magic Probe specific variables
-# Set the BMP_PORT to a serial port and then BMP is used for flashing
-BMP_PORT	?=
-
-################################################################################
-# texane/stlink specific variables
-#STLINK_PORT	?= :4242
-
-
-include ./rules.mk
+include ./libopencm3.target.mk
