@@ -1,13 +1,17 @@
 #include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/gpio.h>
 #include "includes/gpio.h"
 #include "includes/rcc.h"
 #include "includes/adc.h"
 #include "includes/usart.h"
 #include "includes/can.h"
-#define LEDPORT GPIOC
-
-#define LED GPIO13
+#include "includes/timers.h"
+#include "includes/defines.h"
+uint8_t	upcount = 1;
+uint32_t temp = 0x12345678;
+uint8_t temp2;
+uint16_t compare_time = 30000;
 
 
 int main(void)
@@ -17,9 +21,10 @@ int main(void)
 	gpio_init();
 	usart_init();
 	adc_init();
+	/*tim1_init();*/
 	can_setup();
-	/* Blink the LED (PC12) on the board. */
-        gpio_set(LEDPORT, LED);
+	usart_send_byte(USART1, 'h');
+	gpio_clear(GREEN_LED_PORT, GREEN_LED);
 	int i;
         while (1) {
                 //gpio_toggle(LEDPORT, LED);	/* LED on/off */

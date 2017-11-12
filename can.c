@@ -1,8 +1,10 @@
 #include <libopencm3/stm32/can.h>
+#include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/cm3/nvic.h>
 #include "includes/can.h"
+#include "includes/defines.h"
 void can_setup(void)
 {
 	/* Enable peripheral clocks. */
@@ -39,9 +41,9 @@ void can_setup(void)
 		     CAN_BTR_SJW_1TQ,
 		     CAN_BTR_TS1_3TQ,
 		     CAN_BTR_TS2_4TQ,
-		     12,
-		     false,
-		     false))             /* BRP+1: Baud rate prescaler */
+		     12,		/* BRP+1: Baud rate prescaler */
+		     false,		/*Loopback*/	
+		     false))		/*Silent*/             	
 	{
 		gpio_set(GPIOA, GPIO8);   /* LED1 off */
 		gpio_set(GPIOB, GPIO4);   /* LED2 off */
@@ -64,4 +66,64 @@ void can_setup(void)
 
 	/* Enable CAN RX interrupt. */
 	can_enable_irq(CAN1, CAN_IER_FMPIE0);
+}
+void usb_lp_can_rx0_isr(void)
+{
+	uint32_t id;
+	bool ext, rtr;
+	uint8_t fmi, length, data[8];
+
+	can_receive(CAN1, 0, false, &id, &ext, &rtr, &fmi, &length, data, 0);
+	gpio_toggle(GREEN_LED_PORT, GREEN_LED);
+	usart_send_byte(USART1, 'C');
+
+/*
+ *        if (data[0] & 1)
+ *                gpio_clear(GPIOA, GPIO8);
+ *        else
+ *                gpio_set(GPIOA, GPIO8);
+ *
+ *        if (data[0] & 2)
+ *                gpio_clear(GPIOB, GPIO4);
+ *        else
+ *                gpio_set(GPIOB, GPIO4);
+ *
+ *        if (data[0] & 4)
+ *                gpio_clear(GPIOC, GPIO2);
+ *        else
+ *                gpio_set(GPIOC, GPIO2);
+ *
+ *        if (data[0] & 8)
+ *                gpio_clear(GPIOC, GPIO5);
+ *        else
+ *                gpio_set(GPIOC, GPIO5);
+ *
+ */
+	can_fifo_release(CAN1, 0);
+}
+void can_send_test(void)
+{
+	static int temp32 = 0;
+	static uint8_t data[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+
+	/* We call this handler every 1ms so 100ms = 1s
+	 * Resulting in 100Hz message frequency.
+	 */
+	/*if (++temp32 != 100)*/
+		/*return;*/
+
+	/*temp32 = 0;*/
+
+	/*[> Transmit CAN frame. <]*/
+	/*data[0]++;*/
+	if (can_transmit(CAN1,
+			 0,     /* (EX/ST)ID: CAN ID */
+			 false, /* IDE: CAN ID extended? */
+			 false, /* RTR: Request transmit? */
+			 8,     /* DLC: Data length */
+			 data) == -1)
+	{
+
+	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+	}
 }

@@ -18,7 +18,7 @@
 ##
 
  BINARY = mainbms
-OBJS = gpio.o rcc.o uart.o can.o adc.o
+OBJS = gpio.o rcc.o uart.o can.o adc.o timers.o
  ## CSRC	= mainbms.c gpio.c rcc.c
 ##SOURCES= mainbms.c gpio.c rcc.c
 
