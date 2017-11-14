@@ -5,6 +5,7 @@
 #include <libopencm3/cm3/nvic.h>
 #include "includes/can.h"
 #include "includes/defines.h"
+#include "includes/usart.h"
 void can_setup(void)
 {
 	/* Enable peripheral clocks. */
@@ -31,31 +32,20 @@ void can_setup(void)
 	can_reset(CAN1);
 
 	/* CAN cell init. */
-	if (can_init(CAN1,
+	can_init(CAN1,
 		     false,           /* TTCM: Time triggered comm mode? */
 		     true,            /* ABOM: Automatic bus-off management? */
 		     false,           /* AWUM: Automatic wakeup mode? */
-		     false,           /* NART: No automatic retransmission? */
+		     true,           /* NART: No automatic retransmission? */
 		     false,           /* RFLM: Receive FIFO locked mode? */
 		     false,           /* TXFP: Transmit FIFO priority? */
 		     CAN_BTR_SJW_1TQ,
 		     CAN_BTR_TS1_3TQ,
 		     CAN_BTR_TS2_4TQ,
 		     12,		/* BRP+1: Baud rate prescaler */
-		     false,		/*Loopback*/	
-		     false))		/*Silent*/             	
-	{
-		gpio_set(GPIOA, GPIO8);   /* LED1 off */
-		gpio_set(GPIOB, GPIO4);   /* LED2 off */
-		gpio_set(GPIOC, GPIO2);   /* LED3 off */
-		gpio_clear(GPIOC, GPIO5); /* LED4 on */
-		gpio_set(GPIOC, GPIO15);  /* LED5 off */
-
-		/* Die because we failed to initialize. */
-		while (1)
-			__asm__("nop");
-	}
-
+		     true,		/*Loopback*/	
+		     false);		/*Silent*/             	
+	
 	/* CAN filter 0 init. */
 	can_filter_id_mask_32bit_init(CAN1,
 				0,     /* Filter ID */
@@ -74,7 +64,7 @@ void usb_lp_can_rx0_isr(void)
 	uint8_t fmi, length, data[8];
 
 	can_receive(CAN1, 0, false, &id, &ext, &rtr, &fmi, &length, data, 0);
-	gpio_toggle(GREEN_LED_PORT, GREEN_LED);
+	gpio_set(GREEN_LED_PORT, GREEN_LED);
 	usart_send_byte(USART1, 'C');
 
 /*
@@ -105,7 +95,7 @@ void can_send_test(void)
 {
 	static int temp32 = 0;
 	static uint8_t data[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-
+	/*usart_send_32(USART1, CAN_TSR(CAN1), 4);*/
 	/* We call this handler every 1ms so 100ms = 1s
 	 * Resulting in 100Hz message frequency.
 	 */
@@ -116,14 +106,14 @@ void can_send_test(void)
 
 	/*[> Transmit CAN frame. <]*/
 	/*data[0]++;*/
-	if (can_transmit(CAN1,
+	can_transmit(CAN1,
 			 0,     /* (EX/ST)ID: CAN ID */
 			 false, /* IDE: CAN ID extended? */
 			 false, /* RTR: Request transmit? */
 			 8,     /* DLC: Data length */
-			 data) == -1)
-	{
+			 data);
+	
 
 	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-	}
+	
 }

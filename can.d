@@ -22,4 +22,4 @@ can.o: can.c libopencm3//include/libopencm3/stm32/can.h \
  libopencm3//include/libopencm3/cm3/nvic.h \
  libopencm3//include/libopencm3/dispatch/nvic.h \
  libopencm3//include/libopencm3/stm32/f1/nvic.h includes/can.h \
- includes/defines.h
+ includes/defines.h includes/usart.h
