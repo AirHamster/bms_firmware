@@ -112,6 +112,19 @@ void usart1_isr(void)
 	}
 }
 
+void usart_send_string(uint32_t USART, uint8_t *BufferPtr, unsigned short Length )
+{
+
+	while ( Length != 0 )
+	{
+		usart_send_blocking(USART, *BufferPtr);
+		BufferPtr++;
+		Length--;
+	}
+
+	return;
+}
+
 void usart_send_32(uint32_t USART, uint32_t *data, uint8_t lenth)
 {
 	while (usart1.busy);
@@ -147,7 +160,6 @@ void process_command(char *cmd)
 	{
 		can_send_test();
 	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-	usart_send_byte(USART1, 'c');
 		/*UART0_send("\nStarted\n", 9);*/
 	}    
 

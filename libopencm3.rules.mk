@@ -37,6 +37,7 @@ AR		:= $(PREFIX)-ar
 AS		:= $(PREFIX)-as
 OBJCOPY		:= $(PREFIX)-objcopy
 OBJDUMP		:= $(PREFIX)-objdump
+SIZE    	:= $(PREFIX)-size
 GDB		:= $(PREFIX)-gdb
 STFLASH		= $(shell which st-flash)
 STYLECHECK	:= /checkpatch.pl
@@ -194,6 +195,10 @@ print-%:
 	@#printf "  LD      $(*).elf\n"
 	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
 
+# Display size of file.
+#size:
+	#@echo
+	$(SIZE) $(*).elf
 %.o: %.c
 	@#printf "  CC      $(*).c\n"
 	$(Q)$(CC) $(TGT_CFLAGS) $(CFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $(*).o -c $(*).c

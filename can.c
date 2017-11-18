@@ -36,14 +36,14 @@ void can_setup(void)
 		     false,           /* TTCM: Time triggered comm mode? */
 		     true,            /* ABOM: Automatic bus-off management? */
 		     false,           /* AWUM: Automatic wakeup mode? */
-		     true,           /* NART: No automatic retransmission? */
+		     false,           /* NART: No automatic retransmission? */
 		     false,           /* RFLM: Receive FIFO locked mode? */
 		     false,           /* TXFP: Transmit FIFO priority? */
 		     CAN_BTR_SJW_1TQ,
 		     CAN_BTR_TS1_3TQ,
 		     CAN_BTR_TS2_4TQ,
 		     12,		/* BRP+1: Baud rate prescaler */
-		     true,		/*Loopback*/	
+		     false,		/*Loopback*/	
 		     false);		/*Silent*/             	
 	
 	/* CAN filter 0 init. */
@@ -64,7 +64,7 @@ void usb_lp_can_rx0_isr(void)
 	uint8_t fmi, length, data[8];
 
 	can_receive(CAN1, 0, false, &id, &ext, &rtr, &fmi, &length, data, 0);
-	gpio_set(GREEN_LED_PORT, GREEN_LED);
+	gpio_toggle(GREEN_LED_PORT, GREEN_LED);
 	usart_send_byte(USART1, 'C');
 
 /*
@@ -106,14 +106,16 @@ void can_send_test(void)
 
 	/*[> Transmit CAN frame. <]*/
 	/*data[0]++;*/
-	can_transmit(CAN1,
+	usart_send_32(USART1, &CAN_RF0R(CAN1), 4);
+	if (can_transmit(CAN1,
 			 0,     /* (EX/ST)ID: CAN ID */
 			 false, /* IDE: CAN ID extended? */
 			 false, /* RTR: Request transmit? */
 			 8,     /* DLC: Data length */
-			 data);
+			 data) == -1)
+	{
+	gpio_toggle(GREEN_LED_PORT, GREEN_LED);
+	}
 	
-
-	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-	
+	/*usart_send_string(USART1, "\n Status reg: ", strlen("\n Status reg: "));*/
 }

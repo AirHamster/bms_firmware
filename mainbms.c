@@ -23,7 +23,8 @@ int main(void)
 	adc_init();
 	/*tim1_init();*/
 	can_setup();
-	usart_send_byte(USART1, 'h');
+	/*usart_send_byte(USART1, 'h');*/
+	usart_send_string(USART1, "Hello \n", strlen("Hello \n"));
 	gpio_clear(GREEN_LED_PORT, GREEN_LED);
 	int i;
         while (1) {
