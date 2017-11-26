@@ -4,7 +4,7 @@
 #include "includes/rcc.h"
 
 void rcc_init(void){
-	rcc_clock_setup_in_hse_8mhz_out_72mhz();
+	rcc_clock_setup_in_hsi_out_64mhz();
 
 	/*Enable clocks for I2C*/
 	rcc_periph_clock_enable(RCC_GPIOB);

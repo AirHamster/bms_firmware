@@ -45,4 +45,4 @@ uart.o: uart.c \
  libopencm3//include/libopencm3/cm3/nvic.h \
  libopencm3//include/libopencm3/dispatch/nvic.h \
  libopencm3//include/libopencm3/stm32/f1/nvic.h includes/usart.h \
- includes/can.h includes/defines.h
+ includes/adc.h includes/can.h includes/defines.h

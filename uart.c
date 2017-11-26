@@ -8,6 +8,7 @@
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/cm3/nvic.h>
 #include "includes/usart.h"
+#include "includes/adc.h"
 #include "includes/can.h"
 #include "includes/defines.h"
 
@@ -163,6 +164,18 @@ void process_command(char *cmd)
 		/*UART0_send("\nStarted\n", 9);*/
 	}    
 
+	if(strncmp(cmd, "TEMP", 4) == 0)
+	{
+		adc_get_temperature();
+	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+		/*UART0_send("\nStarted\n", 9);*/
+	}    
+	if(strncmp(cmd, "ADC", 3) == 0)
+	{
+		adc_get();
+	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+		/*UART0_send("\nStarted\n", 9);*/
+	}    
 	/* Turn off amplifier */
 	if(strncmp(cmd, "stop", 4) == 0)
 	{
@@ -247,4 +260,25 @@ double atof(const char *s)
 		a = a*(-1);
 	return a;
 }
+void my_usart_print_int(uint32_t usart, int value)
+{
+	int8_t i;
+	uint8_t nr_digits = 0;
+	char buffer[25];
 
+	if (value < 0) {
+		usart_send_blocking(usart, '-');
+		value = value * -1;
+	}
+
+	while (value > 0) {
+		buffer[nr_digits++] = "0123456789"[value % 10];
+		value /= 10;
+	}
+
+	for (i = (nr_digits - 1); i >= 0; i--) {
+		usart_send_blocking(usart, buffer[i]);
+	}
+
+	usart_send_blocking(usart, '\r');
+}

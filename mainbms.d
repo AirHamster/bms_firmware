@@ -11,6 +11,9 @@ mainbms.o: mainbms.c libopencm3//include/libopencm3/stm32/rcc.h \
  libopencm3//include/libopencm3/cm3/memorymap.h \
  libopencm3//include/libopencm3/stm32/f1/rcc.h \
  libopencm3//include/libopencm3/stm32/common/rcc_common_all.h \
+ libopencm3//include/libopencm3/stm32/adc.h \
+ libopencm3//include/libopencm3/stm32/f1/adc.h \
+ libopencm3//include/libopencm3/stm32/common/adc_common_v1.h \
  libopencm3//include/libopencm3/stm32/usart.h \
  libopencm3//include/libopencm3/stm32/f1/usart.h \
  libopencm3//include/libopencm3/stm32/common/usart_common_f124.h \
