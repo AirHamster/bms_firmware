@@ -26,6 +26,11 @@ int main(void)
 	channel_array[0] = 16;
 	/* Set the injected sequence here, with number of channels */
 	adc_set_regular_sequence(ADC1, 1, channel_array);
+
+	channel_array[0] = 8;
+	/* Set the injected sequence here, with number of channels */
+	adc_set_regular_sequence(ADC2, 1, channel_array);
+
 	/*tim1_init();*/
 	can_setup();
 	/*usart_send_byte(USART1, 'h');*/
