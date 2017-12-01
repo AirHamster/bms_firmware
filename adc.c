@@ -56,7 +56,7 @@ void adc_init(void)
 	adc_reset_calibration(ADC2);
 	adc_calibrate(ADC2);
 }
-void adc_get(void)
+uint16_t adc_get(void)
 {
 	gpio_set(RED_LED_PORT, RED_LED);
 	uint16_t temperature = 0;
@@ -69,9 +69,7 @@ void adc_get(void)
 	while (!(ADC_SR(ADC2) & ADC_SR_EOC));
 
 	temperature = ADC_DR(ADC2);
-	usart_send_byte(USART1, (temperature >> 8) & 0xFF);
-	usart_send_byte(USART1, temperature & 0xFF);
-
+	return temperature;
 }
 
 void adc_get_temperature(void)

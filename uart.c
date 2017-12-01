@@ -147,6 +147,7 @@ void usart_send_32(uint32_t USART, uint32_t *data, uint8_t lenth)
 
 void process_command(char *cmd)
 {
+	uint16_t t;
 	if(strncmp(cmd, "LED", 3) == 0)
 	{
 		gpio_toggle(GREEN_LED_PORT, GREEN_LED);
@@ -159,11 +160,32 @@ void process_command(char *cmd)
 
 	if(strncmp(cmd, "can", 3) == 0)
 	{
-		can_send_test();
-	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+		can_send_test(0, 0);
+		/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 		/*UART0_send("\nStarted\n", 9);*/
 	}    
 
+	if(strncmp(cmd, "ONE", 3) == 0)
+	{
+		can_send_test(1, 0);
+		/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+		/*UART0_send("\nStarted\n", 9);*/
+	}
+	if(strncmp(cmd, "TWO", 3) == 0)
+
+	{
+		can_send_test(2, 0);
+	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+		/*UART0_send("\nStarted\n", 9);*/
+	}
+
+	if(strncmp(cmd, "THREE", 5) == 0)
+
+	{
+		can_send_test(3, 0);
+	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+		/*UART0_send("\nStarted\n", 9);*/
+	}
 	if(strncmp(cmd, "TEMP", 4) == 0)
 	{
 		adc_get_temperature();
@@ -172,7 +194,9 @@ void process_command(char *cmd)
 	}    
 	if(strncmp(cmd, "ADC", 3) == 0)
 	{
-		adc_get();
+	t = adc_get();
+	usart_send_byte(USART1, (t >> 8) & 0xFF);
+	usart_send_byte(USART1, t & 0xFF);
 	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 		/*UART0_send("\nStarted\n", 9);*/
 	}    

@@ -84,7 +84,7 @@ void tim1_up_isr(void)
 	//i2c1_read(MPU_ADDRESS, MPU_WHO_AM_I, &temp, 1);	
 	/* Clear update interrupt flag. */
 	timer_clear_flag(TIM1, TIM_SR_UIF);
-	can_send_test();
+	/*can_send_test(0);*/
 	//usart_send_blocking(USART1, I2C1_SR1);
 	/* Toggle LED to indicate compare event. */
 	/*gpio_set(GREEN_LED_PORT, GREEN_LED);*/

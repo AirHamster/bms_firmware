@@ -70,47 +70,39 @@ void usb_lp_can_rx0_isr(void)
 {
 	uint32_t id;
 	bool ext, rtr;
+	uint16_t res;
 	uint8_t fmi, length, data[8];
 
 	can_receive(CAN1, 0, false, &id, &ext, &rtr, &fmi, &length, data, 0);
-	gpio_toggle(GREEN_LED_PORT, GREEN_LED);
-	usart_send_string(USART1, "\n INT", 5);	
+	/*usart_send_string(USART1, "\n INT", 5);	*/
 
-/*
- *        if (data[0] & 1)
- *                gpio_clear(GPIOA, GPIO8);
- *        else
- *                gpio_set(GPIOA, GPIO8);
- *
- *        if (data[0] & 2)
- *                gpio_clear(GPIOB, GPIO4);
- *        else
- *                gpio_set(GPIOB, GPIO4);
- *
- *        if (data[0] & 4)
- *                gpio_clear(GPIOC, GPIO2);
- *        else
- *                gpio_set(GPIOC, GPIO2);
- *
- *        if (data[0] & 8)
- *                gpio_clear(GPIOC, GPIO5);
- *        else
- *                gpio_set(GPIOC, GPIO5);
- *
- */
+	if (data[0] == 3)
+		gpio_toggle(YELLOW_LED_PORT, YELLOW_LED);
+
+
 	can_fifo_release(CAN1, 0);
-	uint16_t i = 6000;
-	while(i != 0)
-	{
-		i--;
-	usart_send_string(USART1, i, 1);	
-	}
-	can_send_test();
+	/*res = adc_get();*/
+	/*can_send_test(2, res);*/
+	res = (data[1] << 8) | data [2];
+	usart_send_byte(USART1, data[1]);
+	usart_send_byte(USART1, data[2]);
+	/*uint16_t i = 6000;*/
+	/*
+	 *while(i != 0)
+	 *{
+	 *        i--;
+	 *usart_send_string(USART1, i, 1);	
+	 *}
+	 */
+	/*can_send_test();*/
 }
-void can_send_test(void)
+void can_send_test(uint8_t number, uint16_t msg)
 {
 	static int temp32 = 0;
-	static uint8_t data[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+	uint8_t data[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+	data[0] = number;
+	data[1] = msg >> 8;
+	data[2] = msg & 0xFF;
 	/*usart_send_32(USART1, CAN_TSR(CAN1), 4);*/
 	/* We call this handler every 1ms so 100ms = 1s
 	 * Resulting in 100Hz message frequency.
@@ -132,6 +124,6 @@ void can_send_test(void)
 	{
 	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 	}
-	usart_send_string(USART1, "\n CAN", 5);	
+	/*usart_send_string(USART1, "\n CAN", 5);	*/
 	/*usart_send_string(USART1, "\n Status reg: ", strlen("\n Status reg: "));*/
 }
