@@ -1,4 +1,23 @@
 
+/************************************************************
+ *	FILE NAME:	usart.c
+ *
+ *	PURPUSE:	
+ *
+ * 	FILE REFERENCES:
+ * 	Name					I/O		Description
+ *
+ * 	EXTERNAL VARIABLES:
+ * 	Source: < >
+ * 	Name			Type		I/O		Description
+ *
+ * 	EXTERNAL REFERENCES:
+ * 	Name							Description
+ *	
+ *	NOTES:
+ *	
+ *
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +31,8 @@
 #include "includes/can.h"
 #include "includes/defines.h"
 
-const char help_msg[] = "Plazma probe controller\n Usage:\n    start - start measurements\n    stop - finish measurements\n    set <voltage> - probe voltage setup\n    native - non-formated output\n    ascii - output in ascii presentation\n";
+char help_msg[] = "Plazma probe controller\n Usage:\n    start - start measurements\n    stop - finish measurements\n    set <voltage> - probe voltage setup\n    native - non-formated output\n    ascii - output in ascii presentation\n";
+char stringa[] = "STRING\n";
 uint8_t resiever[50], rec_len = 0;
 struct usart
 {
@@ -113,7 +133,7 @@ void usart1_isr(void)
 	}
 }
 
-void usart_send_string(uint32_t USART, uint8_t *BufferPtr, unsigned short Length )
+void usart_send_string(uint32_t USART, uint8_t *BufferPtr, uint16_t Length )
 {
 
 	while ( Length != 0 )
@@ -208,14 +228,16 @@ void process_command(char *cmd)
 	/* Manual  */
 	if(strncmp(cmd, "help", 4) == 0)
 	{
-		usart_send_data(USART1, *help_msg, sizeof(help_msg)-1);
+		usart_send_string(USART1, help_msg, sizeof(help_msg)-1);
+		/*usart_send_string(USART1, stringa, 7);*/
+		/*usart_send_string(USART1, "AAAAA\n", strlen("AAAAA\n"));*/
+	/*usart_send_string(USART1, "Hello \n", strlen("Hello \n"));*/
 	}
 	/* Switching between output value presentation */
 }
 
 void usart_send_data(uint32_t USART, uint32_t *data, uint8_t lenth)
 {
-
 	while (usart1.busy);
 	usart1.busy = 1;	
 	usart1.lenth = lenth;

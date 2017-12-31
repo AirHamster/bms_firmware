@@ -1,3 +1,23 @@
+
+/************************************************************
+ *	FILE NAME:
+ *
+ *	PURPUSE:
+ *
+ * 	FILE REFERENCES:
+ * 	Name					I/O		Description
+ *
+ * 	EXTERNAL VARIABLES:
+ * 	Source: < >
+ * 	Name			Type		I/O		Description
+ *
+ * 	EXTERNAL REFERENCES:
+ * 	Name							Description
+ *	
+ *	NOTES:
+ *	
+ *
+ */
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/usart.h>
@@ -9,6 +29,7 @@
 #include "includes/can.h"
 #include "includes/timers.h"
 #include "includes/defines.h"
+#include <string.h>
 uint8_t	upcount = 1;
 uint32_t temp = 0x12345678;
 uint8_t temp2;
@@ -31,12 +52,12 @@ int main(void)
 	/* Set the injected sequence here, with number of channels */
 	adc_set_regular_sequence(ADC2, 1, channel_array);
 
-	/*tim1_init();*/
+	tim1_init();
 	can_setup();
 	/*usart_send_byte(USART1, 'h');*/
 	usart_send_string(USART1, "Hello \n", strlen("Hello \n"));
 	gpio_clear(GREEN_LED_PORT, GREEN_LED);
-	gpio_set(YELLOW_LED_PORT, YELLOW_LED);
+	/*gpio_set(YELLOW_LED_PORT, YELLOW_LED);*/
 	int i;
         while (1) {
                 //gpio_toggle(LEDPORT, LED);	/* LED on/off */

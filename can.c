@@ -1,3 +1,23 @@
+
+/************************************************************
+ *	FILE NAME:
+ *
+ *	PURPUSE:
+ *
+ * 	FILE REFERENCES:
+ * 	Name					I/O		Description
+ *
+ * 	EXTERNAL VARIABLES:
+ * 	Source: < >
+ * 	Name			Type		I/O		Description
+ *
+ * 	EXTERNAL REFERENCES:
+ * 	Name							Description
+ *	
+ *	NOTES:
+ *	
+ *
+ */
 #include <libopencm3/stm32/can.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/rcc.h>
@@ -6,6 +26,10 @@
 #include "includes/can.h"
 #include "includes/defines.h"
 #include "includes/usart.h"
+
+#define FILTER_MASK 0x00
+#define OWN_ID 0x00
+#define BROADCAST_ID 0x00
 void can_setup(void)
 {
 	/* Enable peripheral clocks. */
@@ -86,19 +110,10 @@ void usb_lp_can_rx0_isr(void)
 	res = (data[1] << 8) | data [2];
 	usart_send_byte(USART1, data[1]);
 	usart_send_byte(USART1, data[2]);
-	/*uint16_t i = 6000;*/
-	/*
-	 *while(i != 0)
-	 *{
-	 *        i--;
-	 *usart_send_string(USART1, i, 1);	
-	 *}
-	 */
-	/*can_send_test();*/
 }
 void can_send_test(uint8_t number, uint16_t msg)
 {
-	static int temp32 = 0;
+	/*static int temp32 = 0;*/
 	uint8_t data[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 	data[0] = number;
 	data[1] = msg >> 8;

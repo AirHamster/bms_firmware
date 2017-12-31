@@ -1,3 +1,22 @@
+/************************************************************
+ *	FILE NAME:
+ *
+ *	PURPUSE:
+ *
+ * 	FILE REFERENCES:
+ * 	Name					I/O		Description
+ *
+ * 	EXTERNAL VARIABLES:
+ * 	Source: < >
+ * 	Name			Type		I/O		Description
+ *
+ * 	EXTERNAL REFERENCES:
+ * 	Name							Description
+ *	
+ *	NOTES:
+ *	
+ *
+ */
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>

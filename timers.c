@@ -1,3 +1,23 @@
+
+/************************************************************
+ *	FILE NAME:
+ *
+ *	PURPUSE:
+ *
+ * 	FILE REFERENCES:
+ * 	Name					I/O		Description
+ *
+ * 	EXTERNAL VARIABLES:
+ * 	Source: < >
+ * 	Name			Type		I/O		Description
+ *
+ * 	EXTERNAL REFERENCES:
+ * 	Name							Description
+ *	
+ *	NOTES:
+ *	
+ *
+ */
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/gpio.h>
@@ -87,7 +107,7 @@ void tim1_up_isr(void)
 	/*can_send_test(0);*/
 	//usart_send_blocking(USART1, I2C1_SR1);
 	/* Toggle LED to indicate compare event. */
-	/*gpio_set(GREEN_LED_PORT, GREEN_LED);*/
+	gpio_set(RED_LED_PORT, RED_LED);
 }
 void tim1_cc_isr (void)
 {
@@ -95,6 +115,7 @@ void tim1_cc_isr (void)
 	timer_clear_flag(TIM1, TIM_SR_CC1IF);
 	//usart_send(USART1, 't');		
 
+	gpio_clear(RED_LED_PORT, RED_LED);
 	/*gpio_clear(GREEN_LED_PORT, GREEN_LED);*/
 
 
