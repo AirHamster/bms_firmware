@@ -1,4 +1,4 @@
-CANopen.o: CANopen.c CANopen.h stack/drvTemplate/CO_driver.h \
+CANopen.o: CANopen.c CANopen.h stack/CO_driver.h \
  /home/a-h/x-tools/arm-none-eabi/lib/gcc/arm-none-eabi/4.9.4/include/stddef.h \
  /home/a-h/x-tools/arm-none-eabi/lib/gcc/arm-none-eabi/4.9.4/include/stdint.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/stdint.h \

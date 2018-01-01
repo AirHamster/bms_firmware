@@ -133,7 +133,7 @@ void usart1_isr(void)
 	}
 }
 
-void usart_send_string(uint32_t USART, uint8_t *BufferPtr, uint16_t Length )
+void usart_send_string(uint32_t USART, char *BufferPtr, uint16_t Length )
 {
 
 	while ( Length != 0 )

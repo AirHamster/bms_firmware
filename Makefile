@@ -17,8 +17,10 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
- BINARY = mainbms
-OBJS = gpio.o rcc.o uart.o can.o adc.o timers.o CANopen.o
+CFLAGS = -Wall $(INCLUDE_DIRS)
+BINARY = mainbms
+ 
+OBJS = gpio.o rcc.o uart.o can.o adc.o timers.o CANopen.o ./stack/CO_driver.o ./stack/crc16-ccitt.o ./stack/CO_SDO.o ./stack/CO_Emergency.o  ./stack/CO_NMT_Heartbeat.o ./stack/CO_SYNC.o  ./stack/CO_PDO.o  ./stack/CO_HBconsumer.o  ./stack/CO_SDOmaster.o  ./stack/CO_trace.o ./stack/CO_OD.o
  ## CSRC	= mainbms.c gpio.c rcc.c
 ##SOURCES= mainbms.c gpio.c rcc.c
 

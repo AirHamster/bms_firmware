@@ -75,7 +75,7 @@ extern "C" {
  */
 
 
-    #include "stack/drvTemplate/CO_driver.h"
+    #include "stack/CO_driver.h"
     #include "stack/CO_OD.h"
     #include "stack/CO_SDO.h"
     #include "stack/CO_Emergency.h"

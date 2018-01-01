@@ -22,7 +22,12 @@ mainbms.o: mainbms.c libopencm3//include/libopencm3/stm32/rcc.h \
  libopencm3//include/libopencm3/stm32/f1/gpio.h \
  libopencm3//include/libopencm3/stm32/common/gpio_common_all.h \
  includes/gpio.h includes/rcc.h includes/adc.h includes/usart.h \
- includes/can.h includes/timers.h includes/defines.h \
+ includes/can.h includes/timers.h includes/defines.h CANopen.h \
+ stack/CO_driver.h \
+ /home/a-h/x-tools/arm-none-eabi/lib/gcc/arm-none-eabi/4.9.4/include/stddef.h \
+ stack/CO_OD.h stack/CO_SDO.h stack/CO_Emergency.h \
+ stack/CO_NMT_Heartbeat.h stack/CO_SYNC.h stack/CO_PDO.h \
+ stack/CO_HBconsumer.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/string.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/_ansi.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/newlib.h \
@@ -30,7 +35,6 @@ mainbms.o: mainbms.c libopencm3//include/libopencm3/stm32/rcc.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/machine/ieeefp.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/sys/reent.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/_ansi.h \
- /home/a-h/x-tools/arm-none-eabi/lib/gcc/arm-none-eabi/4.9.4/include/stddef.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/sys/_types.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/machine/_types.h \
  /home/a-h/x-tools/arm-none-eabi/arm-none-eabi/include/sys/lock.h \
