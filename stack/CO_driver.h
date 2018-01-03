@@ -329,7 +329,7 @@ void CO_CANsetNormalMode(CO_CANmodule_t *CANmodule);
  */
 CO_ReturnError_t CO_CANmodule_init(
         CO_CANmodule_t         *CANmodule,
-        int32_t                 CANbaseAddress,
+        uint32_t               *CANbaseAddress,
         CO_CANrx_t              rxArray[],
         uint16_t                rxSize,
         CO_CANtx_t              txArray[],
@@ -462,6 +462,9 @@ void CO_CANverifyErrors(CO_CANmodule_t *CANmodule);
  * @param CANmodule This object.
  */
 void CO_CANinterrupt(CO_CANmodule_t *CANmodule);
+
+
+int8_t getFreeTxBuff(CO_CANmodule_t *CANmodule);
 
 #ifdef __cplusplus
 }

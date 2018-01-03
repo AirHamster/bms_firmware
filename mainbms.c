@@ -18,6 +18,7 @@
  *	
  *
  */
+#include <stdint.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/usart.h>
