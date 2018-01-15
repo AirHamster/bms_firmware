@@ -23,9 +23,8 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/cm3/nvic.h>
-#include "includes/can.h"
-#include "includes/defines.h"
-#include "includes/usart.h"
+#include "can.h"
+
 
 #define FILTER_MASK 0x00
 #define OWN_ID 0x00

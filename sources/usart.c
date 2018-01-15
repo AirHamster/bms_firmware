@@ -26,10 +26,8 @@
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/cm3/nvic.h>
-#include "includes/usart.h"
-#include "includes/adc.h"
-#include "includes/can.h"
-#include "includes/defines.h"
+#include "usart.h"
+
 
 char help_msg[] = "Plazma probe controller\n Usage:\n    start - start measurements\n    stop - finish measurements\n    set <voltage> - probe voltage setup\n    native - non-formated output\n    ascii - output in ascii presentation\n";
 char stringa[] = "STRING\n";
@@ -180,21 +178,21 @@ void process_command(char *cmd)
 
 	if(strncmp(cmd, "can", 3) == 0)
 	{
-		can_send_test(0, 0);
+		/*can_send_test(0, 0);*/
 		/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 		/*UART0_send("\nStarted\n", 9);*/
 	}    
 
 	if(strncmp(cmd, "ONE", 3) == 0)
 	{
-		can_send_test(1, 0);
+		/*can_send_test(1, 0);*/
 		/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 		/*UART0_send("\nStarted\n", 9);*/
 	}
 	if(strncmp(cmd, "TWO", 3) == 0)
 
 	{
-		can_send_test(2, 0);
+		/*can_send_test(2, 0);*/
 	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 		/*UART0_send("\nStarted\n", 9);*/
 	}
@@ -202,13 +200,13 @@ void process_command(char *cmd)
 	if(strncmp(cmd, "THREE", 5) == 0)
 
 	{
-		can_send_test(3, 0);
+		/*can_send_test(3, 0);*/
 	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 		/*UART0_send("\nStarted\n", 9);*/
 	}
 	if(strncmp(cmd, "TEMP", 4) == 0)
 	{
-		adc_get_temperature();
+		/*adc_get_temperature();*/
 	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
 		/*UART0_send("\nStarted\n", 9);*/
 	}    

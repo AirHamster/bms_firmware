@@ -1,0 +1,26 @@
+#ifndef DEFINES_H
+#define DEFINES_H
+
+#define MPU_ADDRESS 0x36 //0b11010010
+#define MPU_WHO_AM_I 0x75
+#define COMPARE_STEP 50
+#define GREEN_LED_PORT GPIOC
+#define GREEN_LED GPIO13
+#define RED_LED_PORT GPIOB
+#define RED_LED GPIO13
+#define YELLOW_LED_PORT GPIOB
+#define YELLOW_LED GPIO12
+#define DEBUGVAL GPIOB_CRL 
+
+#define A_PIN GPIO6
+#define B_PIN GPIO5
+#define C_PIN GPIO4
+#define SELECT_PORT GPIOB
+
+#define EN1_PIN GPIO15
+#define EN2_PIN GPIO3
+#define EN1_PORT GPIOA
+#define EN2_PORT GPIOB
+
+
+#endif

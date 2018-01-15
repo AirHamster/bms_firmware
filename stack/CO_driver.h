@@ -461,7 +461,8 @@ void CO_CANverifyErrors(CO_CANmodule_t *CANmodule);
  *
  * @param CANmodule This object.
  */
-void CO_CANinterrupt(CO_CANmodule_t *CANmodule);
+void CO_CANinterrupt_Tx(CO_CANmodule_t *CANmodule);
+void CO_CANinterrupt_Rx(CO_CANmodule_t *CANmodule);
 
 
 int8_t getFreeTxBuff(CO_CANmodule_t *CANmodule);

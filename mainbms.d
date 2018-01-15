@@ -12,6 +12,9 @@ mainbms.o: mainbms.c \
  libopencm3//include/libopencm3/cm3/memorymap.h \
  libopencm3//include/libopencm3/stm32/f1/rcc.h \
  libopencm3//include/libopencm3/stm32/common/rcc_common_all.h \
+ libopencm3//include/libopencm3/stm32/f1/nvic.h \
+ libopencm3//include/libopencm3/cm3/nvic.h \
+ libopencm3//include/libopencm3/dispatch/nvic.h \
  libopencm3//include/libopencm3/stm32/adc.h \
  libopencm3//include/libopencm3/stm32/f1/adc.h \
  libopencm3//include/libopencm3/stm32/common/adc_common_v1.h \
@@ -22,9 +25,10 @@ mainbms.o: mainbms.c \
  libopencm3//include/libopencm3/stm32/gpio.h \
  libopencm3//include/libopencm3/stm32/f1/gpio.h \
  libopencm3//include/libopencm3/stm32/common/gpio_common_all.h \
- includes/gpio.h includes/rcc.h includes/adc.h includes/usart.h \
- includes/can.h includes/timers.h includes/defines.h CANopen.h \
- stack/CO_driver.h \
+ sources/gpio.h sources/defines.h sources/rcc.h sources/adc.h \
+ sources/gpio.h sources/usart.h sources/adc.h sources/can.h \
+ sources/usart.h sources/can.h sources/timers.h sources/defines.h \
+ CANopen.h stack/CO_driver.h \
  /home/a-h/x-tools/arm-none-eabi/lib/gcc/arm-none-eabi/4.9.4/include/stddef.h \
  stack/CO_OD.h stack/CO_SDO.h stack/CO_Emergency.h \
  stack/CO_NMT_Heartbeat.h stack/CO_SYNC.h stack/CO_PDO.h \

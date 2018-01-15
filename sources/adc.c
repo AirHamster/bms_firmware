@@ -21,10 +21,8 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/gpio.h>
-#include "includes/adc.h"
-#include "includes/gpio.h"
-#include "includes/defines.h"
-#include "includes/usart.h"
+#include "adc.h"
+
 void adc_init(void)
 {
 	int i;

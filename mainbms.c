@@ -20,17 +20,20 @@
  */
 #include <stdint.h>
 #include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/f1/nvic.h>
+#include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/gpio.h>
-#include "includes/gpio.h"
-#include "includes/rcc.h"
-#include "includes/adc.h"
-#include "includes/usart.h"
-#include "includes/can.h"
-#include "includes/timers.h"
-#include "includes/defines.h"
+#include "sources/gpio.h"
+#include "sources/rcc.h"
+#include "sources/adc.h"
+#include "sources/usart.h"
+#include "sources/can.h"
+#include "sources/timers.h"
+#include "sources/defines.h"
 #include "CANopen.h"
+#include "stack/CO_driver.h"
 #include <string.h>
 uint8_t	upcount = 1;
 uint32_t temp = 0x12345678;
@@ -45,7 +48,7 @@ int main(void)
 /*while(reset != CO_RESET_APP){*/
 /* CANopen communication reset - initialize CANopen objects *******************/
         CO_ReturnError_t err;
-        uint16_t timer1msPrevious;
+        /*uint16_t timer1msPrevious;*/
 
         /* disable CAN and CAN interrupts */
 
@@ -84,7 +87,8 @@ int main(void)
 	adc_set_regular_sequence(ADC2, 1, channel_array);
 
 	tim1_init();
-	can_setup();
+	/*CO_CANmodule_init();*/
+	/*can_setup();*/
 	usart_send_string(USART1, "BMS started \n", strlen("BMS started \n"));
 	gpio_clear(GREEN_LED_PORT, GREEN_LED);
 	/*gpio_set(YELLOW_LED_PORT, YELLOW_LED);*/
@@ -98,3 +102,12 @@ int main(void)
 	return 0;
 }
 
+void usb_hp_can_tx_isr(void){
+
+	CO_CANinterrupt_Tx(CO->CANmodule[0]);
+}
+
+void usb_lp_can_rx0_isr(void){
+
+	CO_CANinterrupt_Rx(CO->CANmodule[0]);
+}

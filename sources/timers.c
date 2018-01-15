@@ -22,9 +22,8 @@
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
-#include "includes/timers.h"
-#include "includes/can.h"
-#include "includes/defines.h"
+#include "timers.h"
+
 extern uint8_t	upcount;
 extern uint16_t compare_time;
 
