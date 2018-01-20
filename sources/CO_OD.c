@@ -1,58 +1,43 @@
+/*******************************************************************************
+
+   File - CO_OD.c
+   CANopen Object Dictionary.
+
+   Copyright (C) 2004-2008 Janez Paternoster
+
+   License: GNU Lesser General Public License (LGPL).
+
+   <http://canopennode.sourceforge.net>
+
+   (For more information see <CO_SDO.h>.)
+*/
 /*
- * CANopen Object Dictionary.
- *
- * This file was automatically generated with CANopenNode Object
- * Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
- * Object Dictionary Editor is currently an older, but functional web
- * application. For more info see See 'Object_Dictionary_Editor/about.html' in
- * <http://sourceforge.net/p/canopennode/code_complete/ci/master/tree/>
- * For more information on CANopen Object Dictionary see <CO_SDO.h>.
- *
- * @file        CO_OD.c
- * @author      Janez Paternoster
- * @copyright   2010 - 2016 Janez Paternoster
- *
- * This file is part of CANopenNode, an opensource CANopen Stack.
- * Project home page is <https://github.com/CANopenNode/CANopenNode>.
- * For more information on CANopen see <http://www.can-cia.org/>.
- *
- * CANopenNode is free and open source software: you can redistribute
- * it and/or modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * Following clarification and special exception to the GNU General Public
- * License is included to the distribution terms of CANopenNode:
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library. Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give
- * you permission to link this library with independent modules to
- * produce an executable, regardless of the license terms of these
- * independent modules, and to copy and distribute the resulting
- * executable under terms of your choice, provided that you also meet,
- * for each linked independent module, the terms and conditions of the
- * license of that module. An independent module is a module which is
- * not derived from or based on this library. If you modify this
- * library, you may extend this exception to your version of the
- * library, but you are not obliged to do so. If you do not wish
- * to do so, delete this exception statement from your version.
- */
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 2.1 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "CO_driver.h"
+   Author: Janez Paternoster
+
+
+   This file was automatically generated with CANopenNode Object
+   Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
+
+*******************************************************************************/
+
+
+#include "../stack/CO_driver.h"
 #include "CO_OD.h"
-#include "CO_SDO.h"
+#include "../stack/CO_SDO.h"
 
 
 /*******************************************************************************
@@ -76,7 +61,6 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*2109*/ {0},
 /*2110*/ {0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L},
 /*2120*/ {0x5, 0x1234567890ABCDEFLL, 0x234567890ABCDEF1LL, 12.345, 456.789, 0},
-/*2130*/ {0x3, {'-', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 0, 0x0L},
 /*6000*/ {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 /*6200*/ {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 /*6401*/ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -289,11 +273,6 @@ struct sCO_OD_EEPROM CO_OD_EEPROM = {
            {(void*)&CO_OD_RAM.testVar.R32, 0xBE,  4},
            {(void*)&CO_OD_RAM.testVar.R64, 0xBE,  8},
            {0, 0x0E,  0}};
-/*0x2130*/ const CO_OD_entryRecord_t OD_record2130[4] = {
-           {(void*)&CO_OD_RAM.time.maxSubIndex, 0x06,  1},
-           {(void*)&CO_OD_RAM.time.string[0], 0x06, 30},
-           {(void*)&CO_OD_RAM.time.epochTimeBaseMs, 0x8E,  8},
-           {(void*)&CO_OD_RAM.time.epochTimeOffsetMs, 0xBE,  4}};
 
 
 /*******************************************************************************
@@ -350,10 +329,8 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x2111, 0x10, 0xFD,  4, (void*)&CO_OD_ROM.variableROMInt32[0]},
 {0x2112, 0x10, 0xFF,  4, (void*)&CO_OD_EEPROM.variableNVInt32[0]},
 {0x2120, 0x05, 0x00,  0, (void*)&OD_record2120},
-{0x2130, 0x03, 0x00,  0, (void*)&OD_record2130},
 {0x6000, 0x08, 0x76,  1, (void*)&CO_OD_RAM.readInput8Bit[0]},
 {0x6200, 0x08, 0x3E,  1, (void*)&CO_OD_RAM.writeOutput8Bit[0]},
 {0x6401, 0x0C, 0xB6,  2, (void*)&CO_OD_RAM.readAnalogueInput16Bit[0]},
 {0x6411, 0x08, 0xBE,  2, (void*)&CO_OD_RAM.writeAnalogueOutput16Bit[0]},
 };
-

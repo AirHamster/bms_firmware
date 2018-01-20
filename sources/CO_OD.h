@@ -1,57 +1,41 @@
+/*******************************************************************************
+
+   File: CO_OD.h
+   CANopen Object Dictionary.
+
+   Copyright (C) 2004-2008 Janez Paternoster
+
+   License: GNU Lesser General Public License (LGPL).
+
+   <http://canopennode.sourceforge.net>
+
+   (For more information see <CO_SDO.h>.)
+*/
 /*
- * CANopen Object Dictionary.
- *
- * This file was automatically generated with CANopenNode Object
- * Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
- * Object Dictionary Editor is currently an older, but functional web
- * application. For more info see See 'Object_Dictionary_Editor/about.html' in
- * <http://sourceforge.net/p/canopennode/code_complete/ci/master/tree/>
- * For more information on CANopen Object Dictionary see <CO_SDO.h>.
- *
- * @file        CO_OD.h
- * @author      Janez Paternoster
- * @copyright   2010 - 2016 Janez Paternoster
- *
- * This file is part of CANopenNode, an opensource CANopen Stack.
- * Project home page is <https://github.com/CANopenNode/CANopenNode>.
- * For more information on CANopen see <http://www.can-cia.org/>.
- *
- * CANopenNode is free and open source software: you can redistribute
- * it and/or modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * Following clarification and special exception to the GNU General Public
- * License is included to the distribution terms of CANopenNode:
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library. Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give
- * you permission to link this library with independent modules to
- * produce an executable, regardless of the license terms of these
- * independent modules, and to copy and distribute the resulting
- * executable under terms of your choice, provided that you also meet,
- * for each linked independent module, the terms and conditions of the
- * license of that module. An independent module is a module which is
- * not derived from or based on this library. If you modify this
- * library, you may extend this exception to your version of the
- * library, but you are not obliged to do so. If you do not wish
- * to do so, delete this exception statement from your version.
- */
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 2.1 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef CO_OD_H
-#define CO_OD_H
+   Author: Janez Paternoster
+
+
+   This file was automatically generated with CANopenNode Object
+   Dictionary Editor. DON'T EDIT THIS FILE MANUALLY !!!!
+
+*******************************************************************************/
+
+#ifndef _CO_OD_H
+#define _CO_OD_H
 
 
 /*******************************************************************************
@@ -74,17 +58,17 @@
 
 /*******************************************************************************
    FILE INFO:
-      FileName:     IO Example
-      FileVersion:  -
-      CreationTime: 18:04:29
-      CreationDate: 2016-03-25
-      CreatedBy:    JP
+      FileName:     IO
+      FileVersion:  3.0
+      CreationTime: 13:23:28
+      CreationDate: 2013-03-09
+      CreatedBy:    -
 *******************************************************************************/
 
 
 /*******************************************************************************
    DEVICE INFO:
-      VendorName:     CANopenNode
+      VendorName:     Paternoster
       VendorNumber:   0
       ProductName:    CANopenNode
       ProductNumber:  0
@@ -101,13 +85,12 @@
    #define CO_NO_RPDO                     4   //Associated objects: 1400, 1401, 1402, 1403, 1600, 1601, 1602, 1603
    #define CO_NO_TPDO                     4   //Associated objects: 1800, 1801, 1802, 1803, 1A00, 1A01, 1A02, 1A03
    #define CO_NO_NMT_MASTER               0   
-   #define CO_NO_TRACE                    0   
 
 
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             55
+   #define CO_OD_NoOfElements             54
 
 
 /*******************************************************************************
@@ -176,13 +159,6 @@
                DOMAIN         domain;
                }              OD_testVar_t;
 
-/*2130      */ typedef struct{
-               UNSIGNED8      maxSubIndex;
-               VISIBLE_STRING string[30];
-               UNSIGNED64     epochTimeBaseMs;
-               UNSIGNED32     epochTimeOffsetMs;
-               }              OD_time_t;
-
 
 /*******************************************************************************
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS
@@ -206,7 +182,6 @@ struct sCO_OD_RAM{
 /*2109      */ INTEGER16      voltage[1];
 /*2110      */ INTEGER32      variableInt32[16];
 /*2120      */ OD_testVar_t   testVar;
-/*2130      */ OD_time_t      time;
 /*6000      */ UNSIGNED8      readInput8Bit[8];
 /*6200      */ UNSIGNED8      writeOutput8Bit[8];
 /*6401      */ INTEGER16      readAnalogueInput16Bit[12];
@@ -413,9 +388,6 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 /*2120, Data Type: OD_testVar_t */
       #define OD_testVar                                 CO_OD_RAM.testVar
 
-/*2130, Data Type: OD_time_t */
-      #define OD_time                                    CO_OD_RAM.time
-
 /*6000, Data Type: UNSIGNED8, Array[8] */
       #define OD_readInput8Bit                           CO_OD_RAM.readInput8Bit
       #define ODL_readInput8Bit_arrayLength              8
@@ -434,4 +406,3 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
 
 #endif
-
