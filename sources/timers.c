@@ -1,23 +1,3 @@
-
-/************************************************************
- *	FILE NAME:
- *
- *	PURPUSE:
- *
- * 	FILE REFERENCES:
- * 	Name					I/O		Description
- *
- * 	EXTERNAL VARIABLES:
- * 	Source: < >
- * 	Name			Type		I/O		Description
- *
- * 	EXTERNAL REFERENCES:
- * 	Name							Description
- *	
- *	NOTES:
- *	
- *
- */
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/gpio.h>

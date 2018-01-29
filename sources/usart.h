@@ -3,6 +3,7 @@
 
 #include "adc.h"
 #include "can.h"
+#include "gpio.h"
 #include "defines.h"
 void usart_init(void); 
 void usart_send_32(uint32_t , uint32_t * , uint8_t );

@@ -1,23 +1,5 @@
-
-/************************************************************
- *	FILE NAME:
- *
- *	PURPUSE:
- *
- * 	FILE REFERENCES:
- * 	Name					I/O		Description
- *
- * 	EXTERNAL VARIABLES:
- * 	Source: < >
- * 	Name			Type		I/O		Description
- *
- * 	EXTERNAL REFERENCES:
- * 	Name							Description
- *	
- *	NOTES:
- *	
- *
- */
+#ifndef GPIO_H
+#define GPIO_H
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include "gpio.h"
@@ -49,9 +31,12 @@ void gpio_init(){
 		GPIO_CNF_OUTPUT_PUSHPULL, B_PIN);
 
 	gpio_set_mode(EN1_PORT, GPIO_MODE_OUTPUT_50_MHZ,
-		GPIO_CNF_OUTPUT_PUSHPULL, EN1_PIN);
+		GPIO_CNF_OUTPUT_OPENDRAIN, EN1_PIN);
 	gpio_set_mode(EN2_PORT, GPIO_MODE_OUTPUT_50_MHZ,
-		GPIO_CNF_OUTPUT_PUSHPULL, EN2_PIN);
+		GPIO_CNF_OUTPUT_OPENDRAIN, EN2_PIN);
+
+	gpio_set_mode(FAN_PORT, GPIO_MODE_OUTPUT_50_MHZ,
+		GPIO_CNF_OUTPUT_PUSHPULL, FAN_PIN);
 	/* Toggle LED to indicate compare event. */
 	gpio_set(GREEN_LED_PORT, GREEN_LED);
 }
@@ -79,3 +64,4 @@ uint8_t channel_set (uint8_t number){
 		return 1;
 	}
 }
+#endif

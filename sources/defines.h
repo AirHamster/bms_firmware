@@ -23,4 +23,6 @@
 #define EN2_PORT GPIOB
 
 
+#define FAN_PIN GPIO2
+#define FAN_PORT GPIOA
 #endif

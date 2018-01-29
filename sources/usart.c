@@ -1,23 +1,3 @@
-
-/************************************************************
- *	FILE NAME:	usart.c
- *
- *	PURPUSE:	
- *
- * 	FILE REFERENCES:
- * 	Name					I/O		Description
- *
- * 	EXTERNAL VARIABLES:
- * 	Source: < >
- * 	Name			Type		I/O		Description
- *
- * 	EXTERNAL REFERENCES:
- * 	Name							Description
- *	
- *	NOTES:
- *	
- *
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,10 +7,11 @@
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/cm3/nvic.h>
 #include "usart.h"
-
-
-char help_msg[] = "Plazma probe controller\n Usage:\n    start - start measurements\n    stop - finish measurements\n    set <voltage> - probe voltage setup\n    native - non-formated output\n    ascii - output in ascii presentation\n";
-char stringa[] = "STRING\n";
+#include "../stack/CO_driver.h"
+#include "../CANopen.h"
+extern CO_CANtx_t *txbuff;
+/*uint8_t buf[] = {}*/
+char help_msg[] = "Battery management system: \n   Hardware version: 1.2 \n   Firmware version: 1.0 \n   CANopen objects: N/A \n";
 uint8_t resiever[50], rec_len = 0;
 struct usart
 {
@@ -44,7 +25,7 @@ struct usart
 	uint8_t byte_counter;
 	unsigned int busy:1;
 };
-	struct usart usart1;
+struct usart usart1;
 void usart_init(void)
 {
 	/* Enable clocks for GPIO port A (for GPIO_USART1_TX) and USART1. */
@@ -95,7 +76,7 @@ void usart1_isr(void)
 			resiever[rec_len++] = tmp;
 		}
 
-					/*USART_CR1(USART1) &= ~USART_CR1_RXNEIE;*/
+		/*USART_CR1(USART1) &= ~USART_CR1_RXNEIE;*/
 	}
 	//Check if we were called because of TXE. 
 	if (((USART_CR1(USART1) & USART_CR1_TXEIE) != 0) &&
@@ -170,68 +151,62 @@ void process_command(char *cmd)
 	{
 		gpio_toggle(GREEN_LED_PORT, GREEN_LED);
 		usart_send_byte(USART1, 'l');
-		/*UART0_send("z\n", 2);*/
-		//gpio_set(OP_AMP_PORT, OP_AMP_PIN);
-		/*led_set(LED2);*/
-		//	timer0_start();
 	}    
 
 	if(strncmp(cmd, "can", 3) == 0)
 	{
-		/*can_send_test(0, 0);*/
-		/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-		/*UART0_send("\nStarted\n", 9);*/
+		usart_send_string(USART1, "Trying to send...\n", sizeof("trying to send...\n"));
+		CO_ReturnError_t er;
+		er = CO_CANsend(CO->CANmodule[0], txbuff);
+		if (er == CO_ERROR_NO){
+			usart_send_string(USART1, "Sent\n", 5);
+		}else{
+			usart_send_string(USART1, "Error\n", 6);
+			switch (er){
+				case (CO_ERROR_TX_OVERFLOW):
+					usart_send_string(USART1, "Overflow\n", 9);
+					break;
+				case (CO_ERROR_TX_PDO_WINDOW):
+					usart_send_string(USART1, "Window\n", 7);
+					break;
+			}
+		}
 	}    
 
 	if(strncmp(cmd, "ONE", 3) == 0)
 	{
-		/*can_send_test(1, 0);*/
-		/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-		/*UART0_send("\nStarted\n", 9);*/
+		can_send_test(1, 0);
+		usart_send_string(USART1, "ONE go\n", 7);
 	}
 	if(strncmp(cmd, "TWO", 3) == 0)
 
 	{
 		/*can_send_test(2, 0);*/
-	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-		/*UART0_send("\nStarted\n", 9);*/
 	}
 
 	if(strncmp(cmd, "THREE", 5) == 0)
 
 	{
 		/*can_send_test(3, 0);*/
-	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-		/*UART0_send("\nStarted\n", 9);*/
 	}
 	if(strncmp(cmd, "TEMP", 4) == 0)
 	{
 		/*adc_get_temperature();*/
-	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-		/*UART0_send("\nStarted\n", 9);*/
 	}    
 	if(strncmp(cmd, "ADC", 3) == 0)
 	{
-	t = adc_get();
-	usart_send_byte(USART1, (t >> 8) & 0xFF);
-	usart_send_byte(USART1, t & 0xFF);
-	/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
-		/*UART0_send("\nStarted\n", 9);*/
+		channel_set(1);
+		t = adc_get();
+		usart_send_string(USART1, "\nVoltage is: ", 13);
+		usart_send_byte(USART1, (t >> 8) & 0xFF);
+		usart_send_byte(USART1, t & 0xFF);
+		gpio_toggle(GREEN_LED_PORT, GREEN_LED);
 	}    
-	/* Turn off amplifier */
-	if(strncmp(cmd, "stop", 4) == 0)
-	{
-		//UART0_send("\nStopped\n", 9);
-	}
 	/* Manual  */
-	if(strncmp(cmd, "help", 4) == 0)
+	if(strncmp(cmd, "info", 4) == 0)
 	{
 		usart_send_string(USART1, help_msg, sizeof(help_msg)-1);
-		/*usart_send_string(USART1, stringa, 7);*/
-		/*usart_send_string(USART1, "AAAAA\n", strlen("AAAAA\n"));*/
-	/*usart_send_string(USART1, "Hello \n", strlen("Hello \n"));*/
 	}
-	/* Switching between output value presentation */
 }
 
 void usart_send_data(uint32_t USART, uint32_t *data, uint8_t lenth)

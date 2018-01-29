@@ -49,15 +49,13 @@
 #include "CO_driver.h"
 #include "CO_Emergency.h"
 
-/*#include "../CANopen.h"*/
-
 #include <libopencm3/stm32/can.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/systick.h>
 
-/*extern CO_t *CO; */
 static void CO_CANClkSetting (void);
 static void CO_CANconfigGPIO (void);
 static void CO_CANsendToModule(CO_CANmodule_t *CANmodule, CO_CANtx_t *buffer, uint8_t transmit_mailbox);
@@ -86,11 +84,6 @@ CO_ReturnError_t CO_CANmodule_init(
         uint16_t                txSize,
         uint16_t                CANbitRate)
 {
-    /*
-	 *CAN_InitTypeDef CAN_InitStruct;
-	 *CAN_FilterInitTypeDef CAN_FilterInitStruct;
-	 *NVIC_InitTypeDef NVIC_InitStructure;
-	 */
 	int i;
 	uint8_t result;
 	uint8_t prescaler;
@@ -155,9 +148,7 @@ CO_ReturnError_t CO_CANmodule_init(
 		case 10: prescaler = 200;
 			 break;
 	}
-	/*NOTTODO: hmm, wtf is tq*?
-	 * Answertq - time quant
-	 * TODO: calc bitrate/values*/
+	 /* TODO: calc bitrate/values*/
 	/*
 	 *CAN_InitStruct.CAN_SJW = CAN_SJW_4tq;     // changed by VJ, old value = CAN_SJW_1tq;
 	 *CAN_InitStruct.CAN_BS1 = CAN_BS1_12tq;    // changed by VJ, old value = CAN_BS1_3tq;
@@ -165,9 +156,8 @@ CO_ReturnError_t CO_CANmodule_init(
 	 *CAN_InitStruct.CAN_NART = ENABLE;   // No Automatic retransmision
 	 */
 
-	/*result = CAN_Init(CANmodule->CANbaseAddress, &CAN_InitStruct);*/
 	/*TODO: dependable can1 / can2*/
-	/* CAN cell init. */
+	usart_send_string(USART1, "Inside init\n", 12);
 	result = can_init(CAN1,
 			false,           /* TTCM: Time triggered comm mode? */
 			true,            /* ABOM: Automatic bus-off management? */
@@ -183,30 +173,8 @@ CO_ReturnError_t CO_CANmodule_init(
 			false);		/*Silent*/             	
 	if (result != 0)
 	{
-		// TRACE_DEBUG_WP("res=%d\n\r", result);
 		return CO_ERROR_TIMEOUT;  /* CO- Return Init failed */
 	}
-
-	/*
-	 *NOTTODO: hmm, CAN without hardware filters? RLY?
-	 *Answer - yes, objects like a filters.
-	 *TODO: make hw filters!
-	 */
-	/* CO - Changed VJ End */
-
-	/*
-	 *memset(&CAN_FilterInitStruct, 0, sizeof (CAN_FilterInitStruct));
-	 *CAN_FilterInitStruct.CAN_FilterNumber = 0;
-	 *CAN_FilterInitStruct.CAN_FilterIdHigh = 0;
-	 *CAN_FilterInitStruct.CAN_FilterIdLow = 0;
-	 *CAN_FilterInitStruct.CAN_FilterMaskIdHigh = 0;
-	 *CAN_FilterInitStruct.CAN_FilterMaskIdLow = 0;
-	 *CAN_FilterInitStruct.CAN_FilterFIFOAssignment = 0; // pouzivame jen FIFO0
-	 *CAN_FilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask;
-	 *CAN_FilterInitStruct.CAN_FilterScale = CAN_FilterScale_32bit;
-	 *CAN_FilterInitStruct.CAN_FilterActivation = ENABLE;
-	 *CAN_FilterInit(&CAN_FilterInitStruct);
-	 */
 
 	/* CAN filter 0 init. */
 	can_filter_id_mask_32bit_init(CAN1,
@@ -215,6 +183,7 @@ CO_ReturnError_t CO_CANmodule_init(
 			0,     /* CAN ID mask */
 			0,     /* FIFO assignment (here: FIFO0) */
 			true); /* Enable the filter. */
+
 	/* NVIC setup. */
 	nvic_enable_irq(NVIC_USB_HP_CAN_TX_IRQ);
 	nvic_enable_irq(NVIC_USB_LP_CAN_RX0_IRQ);
@@ -225,6 +194,7 @@ CO_ReturnError_t CO_CANmodule_init(
 	/* Enable CAN RX interrupt. */
 	can_enable_irq(CAN1, CAN_IER_FMPIE0);
 	can_enable_irq(CAN1, CAN_IER_TMEIE);
+
 	return CO_ERROR_NO;
 }
 
@@ -259,7 +229,6 @@ CO_ReturnError_t CO_CANrxBufferInit(
         void                  (*pFunct)(void *object, const CO_CANrxMsg_t *message))
 {
    CO_CANrx_t *rxBuffer;
-	//CanRxMsg *rxBuffer;
     uint16_t RXF, RXM;
 
     //safety
@@ -331,7 +300,6 @@ CO_CANtx_t *CO_CANtxBufferInit(
 CO_ReturnError_t CO_CANsend(CO_CANmodule_t *CANmodule, CO_CANtx_t *buffer){
     CO_ReturnError_t err = CO_ERROR_NO;
     int8_t txBuff;
-	/*static int temp32 = 0;*/
 
     /* Verify overflow */ 
     if(buffer->bufferFull)
@@ -393,7 +361,6 @@ void CO_CANclearPendingSyncPDOs(CO_CANmodule_t *CANmodule){
         }
     }
     CO_UNLOCK_CAN_SEND();
-
 
     if(tpdoDeleted != 0U){
         CO_errorReport((CO_EM_t*)CANmodule->em, CO_EM_TPDO_OUTSIDE_WINDOW, CO_EMC_COMMUNICATION, tpdoDeleted);
@@ -457,49 +424,35 @@ void CO_CANinterrupt_Rx(CO_CANmodule_t *CANmodule)
 
 	uint32_t id;
 	bool ext, rtr;
-	uint16_t res;
 	uint8_t fmi, length, data[8];
 
 	can_receive(CAN1, 0, false, &id, &ext, &rtr, &fmi, &length, data, 0);
-	/*usart_send_string(USART1, "\n INT", 5);	*/
-
-	//if (data[0] == 3)
-		/*gpio_toggle(YELLOW_LED_PORT, YELLOW_LED);*/
 
 
+	/*CanRxMsg      CAN1_RxMsg;*/
+
+	/*CAN_Receive(CANmodule->CANbaseAddress, CAN_FilterFIFO0, &CAN1_RxMsg);*/
+	can_receive(CAN1, 0, false, &id, &ext, &rtr, &fmi, &length, data, 0);
+	{
+		uint16_t index;
+		uint8_t msgMatched = 0;
+		CO_CANrx_t *msgBuff = CANmodule->rxArray;
+		for (index = 0; index < CANmodule->rxSize; index++)
+		{
+			//TODO: RTR processing
+			uint16_t msg = (id << 2);
+			if (((msg ^ msgBuff->ident) & msgBuff->mask) == 0)
+			{
+				msgMatched = 1;
+				break;
+			}
+			msgBuff++;
+		}
+		//Call specific function, which will process the message
+		if (msgMatched && msgBuff->pFunct)
+			msgBuff->pFunct(msgBuff->object, data);
+	}
 	can_fifo_release(CAN1, 0);
-	/*res = adc_get();*/
-	/*can_send_test(2, res);*/
-	res = (data[1] << 8) | data [2];
-	usart_send_byte(USART1, data[1]);
-	usart_send_byte(USART1, data[2]);
-
-/*
- *TODO: AAA, why so hard?
- */
-/*
- *        CanRxMsg      CAN1_RxMsg;
- *
- *        CAN_Receive(CANmodule->CANbaseAddress, CAN_FilterFIFO0, &CAN1_RxMsg);
- *        {
- *                uint16_t index;
- *                uint8_t msgMatched = 0;
- *                CO_CANrx_t *msgBuff = CANmodule->rxArray;
- *                for (index = 0; index < CANmodule->rxSize; index++)
- *                {
- *                    uint16_t msg = (CAN1_RxMsg.StdId << 2) | (CAN1_RxMsg.RTR ? 2 : 0);
- *                    if (((msg ^ msgBuff->ident) & msgBuff->mask) == 0)
- *                    {
- *                        msgMatched = 1;
- *                        break;
- *                    }
- *                    msgBuff++;
- *                }
- *                //Call specific function, which will process the message
- *                if (msgMatched && msgBuff->pFunct)
- *            msgBuff->pFunct(msgBuff->object, &CAN1_RxMsg);
- *                }
- */
 }
 
 /******************************************************************************/
@@ -508,8 +461,6 @@ void CO_CANinterrupt_Tx(CO_CANmodule_t *CANmodule)
 {
 
      int8_t txBuff;
-    /* Clear interrupt flag */
-    /*CAN_ITConfig(CANmodule->CANbaseAddress, CAN_IT_TME, DISABLE); // Transmit mailbox empty interrupt*/
     /* First CAN message (bootup) was sent successfully */
     CANmodule->firstCANtxMessage = 0;
     /* clear flag from previous message */
@@ -552,17 +503,19 @@ void CO_CANinterrupt_Status(CO_CANmodule_t *CANmodule)
 /******************************************************************************/
 static void CO_CANsendToModule(CO_CANmodule_t *CANmodule, CO_CANtx_t *buffer, uint8_t transmit_mailbox)
 {
+	(void) transmit_mailbox;
+	(void*) CANmodule;
 	int i;
 	uint8_t canID;
 	uint8_t dat_lenth;
 	uint8_t data[8];
-
 
 	for (i = 0; i < 8; i++) 
 		data[i] = buffer->data[i];
 
 	canID = ((buffer->ident) >> 21);
 	dat_lenth = buffer->DLC;
+	usart_send_string(USART1, "Inside sendToModule\n", sizeof("Inside sendToModule\n")-1);
 	if (can_transmit(CAN1,
 				canID,     /* (EX/ST)ID: CAN ID */
 				false, /* IDE: CAN ID extended? */
@@ -571,56 +524,14 @@ static void CO_CANsendToModule(CO_CANmodule_t *CANmodule, CO_CANtx_t *buffer, ui
 				data) == -1)
 	{
 		/*gpio_toggle(GREEN_LED_PORT, GREEN_LED);*/
+		usart_send_string(USART1, "TR failed, no free mailboxes\n",
+				sizeof("TR failed, no free mailboxes\n"));
 	}
-	//CanTxMsg      CAN1_TxMsg;
-	// int i;
-
-	/*Test code, VJ using Drivers Start*/
-	//CAN1_TxMsg.IDE = CAN_ID_STD;
-	//CAN1_TxMsg.DLC = buffer->DLC;
-	//for (i = 0; i < 8; i++) CAN1_TxMsg.Data[i] = buffer->data[i];
-	//CAN1_TxMsg.StdId = ((buffer->ident) >> 21);
-	//CAN1_TxMsg.RTR = CAN_RTR_DATA;
-
-	/*CAN_Transmit(CANmodule->CANbaseAddress, &CAN1_TxMsg);*/
-	/*CAN_ITConfig(CANmodule->CANbaseAddress, CAN_IT_TME, ENABLE);*/
-
-	/*Test code, VJ using Drivers End*/
-
 }
 
 int8_t getFreeTxBuff(CO_CANmodule_t *CANmodule)
 {
-	//uint8_t txBuff = CAN_TXMAILBOX_0;
-
-	//if (CAN_TransmitStatus(CANmodule->CANbaseAddress, txBuff) == CAN_TxStatus_Ok)
-	//TODO: STDperif uses some CANbaseAddress structure. It should be replaced by smth normal
-	/*
-	   for (txBuff = CAN_TXMAILBOX_0; txBuff <= (CAN_TXMAILBOX_2 + 1); txBuff++)
-	   {
-	   switch (txBuff)
-	   {
-	   case (CAN_TXMAILBOX_0 ):
-	   if (CANmodule->CANbaseAddress->TSR & CAN_TSR_TME0 )
-	   return txBuff;
-	   else
-	   break;
-	   case (CAN_TXMAILBOX_1 ):
-	   if (CANmodule->CANbaseAddress->TSR & CAN_TSR_TME1 )
-	   return txBuff;
-	   else
-	   break;
-	   case (CAN_TXMAILBOX_2 ):
-	   if (CANmodule->CANbaseAddress->TSR & CAN_TSR_TME2 )
-	   return txBuff;
-	   else
-	   break;
-	   default:
-	   break;
-	   }
-	   }
-	   */
-	return can_available_mailbox(CAN1);
+	return (int8_t)can_available_mailbox(CAN1);
 }
 
 /* CO- VJ Changed Start */
@@ -635,6 +546,20 @@ static void CO_CANClkSetting (void)
 	rcc_periph_clock_enable(RCC_CAN1);
 }
 
+void CO_TimerSetup (void)
+{
+	/* 72MHz / 8 => 9000000 counts per second */
+	systick_set_clocksource(STK_CSR_CLKSOURCE_AHB_DIV8);
+
+	/* 9000000/9000 = 1000 overflows per second - every 1ms one interrupt */
+	/* SysTick interrupt every N clock pulses: set reload to N-1 */
+	systick_set_reload(8999);
+
+	systick_interrupt_enable();
+
+	/* Start counting. */
+	systick_counter_enable();
+}
 /******************************************************************************/
 static void CO_CANconfigGPIO (void)
 {

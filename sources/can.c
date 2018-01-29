@@ -1,23 +1,6 @@
+#ifndef CAN_H
+#define CAN_H
 
-/************************************************************
- *	FILE NAME:
- *
- *	PURPUSE:
- *
- * 	FILE REFERENCES:
- * 	Name					I/O		Description
- *
- * 	EXTERNAL VARIABLES:
- * 	Source: < >
- * 	Name			Type		I/O		Description
- *
- * 	EXTERNAL REFERENCES:
- * 	Name							Description
- *	
- *	NOTES:
- *	
- *
- */
 #include <libopencm3/stm32/can.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/rcc.h>
@@ -141,3 +124,4 @@ void can_send_test(uint8_t number, uint16_t msg)
 	/*usart_send_string(USART1, "\n CAN", 5);	*/
 	/*usart_send_string(USART1, "\n Status reg: ", strlen("\n Status reg: "));*/
 }
+#endif

@@ -57,7 +57,7 @@ extern "C" {
 #include <stddef.h>         /* for 'NULL' */
 #include <stdint.h>         /* for 'int8_t' to 'uint64_t' */
 #include <stdbool.h>        /* for 'true', 'false' */
-
+#include "../sources/defines.h"
 
 /**
  * @defgroup CO_driver Driver

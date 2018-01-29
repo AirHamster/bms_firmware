@@ -1,28 +1,11 @@
-/************************************************************
- *	FILE NAME:
- *
- *	PURPUSE:
- *
- * 	FILE REFERENCES:
- * 	Name					I/O		Description
- *
- * 	EXTERNAL VARIABLES:
- * 	Source: < >
- * 	Name			Type		I/O		Description
- *
- * 	EXTERNAL REFERENCES:
- * 	Name							Description
- *	
- *	NOTES:
- *	
- *
- */
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/gpio.h>
 #include "adc.h"
 
+uint8_t channel_array1[16];
+uint8_t channel_array2[16];
 void adc_init(void)
 {
 	int i;
@@ -72,6 +55,14 @@ void adc_init(void)
 
 	adc_reset_calibration(ADC2);
 	adc_calibrate(ADC2);
+
+	/* Select the channel we want to convert. 16=temperature_sensor. */
+	/* Set the injected sequence here, with number of channels */
+	channel_array1[0] = 16;
+	adc_set_regular_sequence(ADC1, 1, channel_array1);
+	/* Set the injected sequence here, with number of channels */
+	channel_array2[0] = 8;
+	adc_set_regular_sequence(ADC2, 1, channel_array2);
 }
 uint16_t adc_get(void)
 {
