@@ -2,5 +2,7 @@
 *.swe
 *.o
 *.d
+*.elf
+*.map
 
 doc/

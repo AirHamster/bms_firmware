@@ -10,51 +10,104 @@
 #include "../stack/CO_driver.h"
 #include "../CANopen.h"
 extern CO_CANtx_t *txbuff;
-/*uint8_t buf[] = {}*/
-char help_msg[] = "Battery management system: \n   Hardware version: 1.2 \n   Firmware version: 1.0 \n   CANopen objects: N/A \n";
-uint8_t resiever[50], rec_len = 0;
-struct usart
+uint8_t testdata[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+static char help_msg[] = "Battery management system: \n   Hardware version: 2.0 \n   Firmware version: 1.0 \n   CANopen objects: N/A \n";
+static uint8_t resiever[50];
+static uint8_t rec_len;
+USART_t usart1;
+USART_t usart2;
+USART_t usart3;
+bool usart_init(uint32_t usart, uint32_t baudrate,  bool remap)
 {
-	uint32_t *global_pointer;
-	uint8_t *data_pointer;
-	uint8_t data1;
-	uint8_t data2;
-	uint8_t data3;
-	uint8_t data4;
-	uint8_t lenth;
-	uint8_t byte_counter;
-	unsigned int busy:1;
-};
-struct usart usart1;
-void usart_init(void)
-{
-	/* Enable clocks for GPIO port A (for GPIO_USART1_TX) and USART1. */
-	rcc_periph_clock_enable(RCC_GPIOA);
-	rcc_periph_clock_enable(RCC_USART1);
-	/* Enable the USART1 interrupt. */
-	nvic_enable_irq(NVIC_USART1_IRQ);
+	switch (usart)
+	{
+		case (USART1):
+			rcc_periph_clock_enable(RCC_USART1);
+			/* Enable the USART1 interrupt. */
+			nvic_enable_irq(NVIC_USART1_IRQ);
+			if (remap)
+			{
+				AFIO_MAPR |= AFIO_MAPR_USART1_REMAP;
+				rcc_periph_clock_enable(RCC_GPIOB);
+				rcc_periph_clock_enable(RCC_AFIO);
+				gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+						GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART1_RE_TX);
 
-	/* Setup GPIO pin GPIO_USART1_RE_TX on GPIO port B for transmit. */
-	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
-			GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART1_TX);
+				gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
+						GPIO_CNF_INPUT_FLOAT, GPIO_USART1_RE_RX);
+			}else{
+				rcc_periph_clock_enable(RCC_GPIOA);
+				gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
+						GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART1_TX);
 
-	/* Setup GPIO pin GPIO_USART1_RE_RX on GPIO port B for receive. */
-	gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
-			GPIO_CNF_INPUT_FLOAT, GPIO_USART1_RX);
+				gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
+						GPIO_CNF_INPUT_FLOAT, GPIO_USART1_RX);
+			}
+			break;
+
+		case (USART2):
+			rcc_periph_clock_enable(RCC_USART2);
+			nvic_enable_irq(NVIC_USART2_IRQ);
+			if (remap)
+			{
+				AFIO_MAPR |= AFIO_MAPR_USART2_REMAP;
+				rcc_periph_clock_enable(RCC_GPIOD);
+				rcc_periph_clock_enable(RCC_AFIO);
+				gpio_set_mode(GPIOD, GPIO_MODE_OUTPUT_50_MHZ,
+						GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART2_RE_TX);
+
+				gpio_set_mode(GPIOD, GPIO_MODE_INPUT,
+						GPIO_CNF_INPUT_FLOAT, GPIO_USART2_RE_RX);
+			}else{
+				rcc_periph_clock_enable(RCC_GPIOA);
+				gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
+						GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART2_TX);
+
+				gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
+						GPIO_CNF_INPUT_FLOAT, GPIO_USART2_RX);
+			}
+			break;
+
+		case (USART3):
+			rcc_periph_clock_enable(RCC_USART3);
+			nvic_enable_irq(NVIC_USART3_IRQ);
+			if (remap)
+			{
+				AFIO_MAPR |= AFIO_MAPR_USART3_REMAP_FULL_REMAP;
+				rcc_periph_clock_enable(RCC_GPIOC);
+				rcc_periph_clock_enable(RCC_AFIO);
+				gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_50_MHZ,
+						GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART3_FR_TX);
+
+				gpio_set_mode(GPIOC, GPIO_MODE_INPUT,
+						GPIO_CNF_INPUT_FLOAT, GPIO_USART3_FR_RX);
+			}else{
+				rcc_periph_clock_enable(RCC_GPIOB);
+				gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_50_MHZ,
+						GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART3_TX);
+
+				gpio_set_mode(GPIOB, GPIO_MODE_INPUT,
+						GPIO_CNF_INPUT_FLOAT, GPIO_USART3_RX);
+			}
+			break;
+		default:
+			return 0;
+	}
 
 	/* Setup UART parameters. */
-	usart_set_baudrate(USART1, 115200);
-	usart_set_databits(USART1, 8);
-	usart_set_stopbits(USART1, USART_STOPBITS_1);
-	usart_set_parity(USART1, USART_PARITY_NONE);
-	usart_set_flow_control(USART1, USART_FLOWCONTROL_NONE);
-	usart_set_mode(USART1, USART_MODE_TX_RX);
+	usart_set_baudrate(usart, baudrate);
+	usart_set_databits(usart, 8);
+	usart_set_stopbits(usart, USART_STOPBITS_1);
+	usart_set_parity(usart, USART_PARITY_NONE);
+	usart_set_flow_control(usart, USART_FLOWCONTROL_NONE);
+	usart_set_mode(usart, USART_MODE_TX_RX);
 
-	/* Enable USART1 Receive interrupt. */
-	USART_CR1(USART1) |= USART_CR1_RXNEIE;
+	/* Enable USART Receive interrupt. */
+	USART_CR1(usart) |= USART_CR1_RXNEIE;
 
 	/* Finally enable the USART. */
-	usart_enable(USART1);
+	usart_enable(usart);
+	return 1;
 }
 
 void usart1_isr(void)
@@ -155,22 +208,11 @@ void process_command(char *cmd)
 
 	if(strncmp(cmd, "can", 3) == 0)
 	{
-		usart_send_string(USART1, "Trying to send...\n", sizeof("trying to send...\n"));
 		CO_ReturnError_t er;
-		er = CO_CANsend(CO->CANmodule[0], txbuff);
-		if (er == CO_ERROR_NO){
-			usart_send_string(USART1, "Sent\n", 5);
-		}else{
-			usart_send_string(USART1, "Error\n", 6);
-			switch (er){
-				case (CO_ERROR_TX_OVERFLOW):
-					usart_send_string(USART1, "Overflow\n", 9);
-					break;
-				case (CO_ERROR_TX_PDO_WINDOW):
-					usart_send_string(USART1, "Window\n", 7);
-					break;
-			}
-		}
+
+		CO->TPDO[0]->mapPointer[0] = &testdata[0];
+		CO->TPDO[0]->sendRequest = true;
+		usart_send_string(USART1, "Data loaded...\n", sizeof("Data loaded...\n"));
 	}    
 
 	if(strncmp(cmd, "ONE", 3) == 0)

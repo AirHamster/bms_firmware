@@ -98,5 +98,5 @@ void adc_get_temperature(void)
 	 * That's actually not the real temperature - you have to compute it
 	 * as described in the datasheet.
 	 */
-	my_usart_print_int(USART1, temperature);
+	/*my_usart_print_int(USART1, temperature);*/
 }

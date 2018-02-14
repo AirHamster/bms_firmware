@@ -31,7 +31,8 @@ int main(void)
 	fpointer = resieveProc;
 	rcc_init();
 	gpio_init();
-	usart_init();
+	usart_init(USART1, 115200, false);
+	usart_init(USART2, 250000, false);
 
 	adc_init();
 
@@ -63,25 +64,24 @@ int main(void)
 
         /* start CAN */
         CO_CANsetNormalMode(CO->CANmodule[0]);
-	txbuff = CO_CANtxBufferInit(CO->CANmodule[0], 0x1010, 126, false, 8, 0);
-	CO_CANrxBufferInit(CO->CANmodule[0], 0x1011, 126, 0x7FF, false, 0x1400, fpointer);
+	txbuff = CO_CANtxBufferInit(CO->CANmodule[0], 0x1800, 126, false, 8, 0);
+	CO_CANrxBufferInit(CO->CANmodule[0], 0x1400, 126, 0x7FF, false, 0x1400, fpointer);
 
 	/*gpio_clear(GREEN_LED_PORT, GREEN_LED); //this for BluePill, low is active*/
 	/*gpio_set(YELLOW_LED_PORT, YELLOW_LED); //this for bms, high is active*/
-
+	can_send_test(2, 4);
 	int i;
         while (1) {
                 for (i = 0; i < 800000; i++)	/* Wait a bit. */
 			__asm__("nop");
 	}
-
 	return 0;
 }
 void sys_tick_handler(void){
 
     if(CO->CANmodule[0]->CANnormal) {
         bool_t syncWas;
-
+	CO_process(CO, 1000, 1000);
         /* Process Sync and read inputs */
         syncWas = CO_process_SYNC_RPDO(CO, 1000);
 

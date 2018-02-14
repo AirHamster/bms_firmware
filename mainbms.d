@@ -27,9 +27,9 @@ mainbms.o: mainbms.c \
  libopencm3//include/libopencm3/stm32/f1/gpio.h \
  libopencm3//include/libopencm3/stm32/common/gpio_common_all.h \
  sources/gpio.h sources/defines.h sources/rcc.h sources/adc.h \
- sources/gpio.h sources/usart.h sources/adc.h sources/can.h \
- sources/usart.h sources/can.h sources/timers.h sources/defines.h \
- CANopen.h stack/CO_driver.h \
+ sources/gpio.h sources/usart.h sources/can.h sources/usart.h \
+ sources/timers.h sources/can.h sources/defines.h CANopen.h \
+ stack/CO_driver.h \
  /home/a-h/x-tools/arm-none-eabi/lib/gcc/arm-none-eabi/4.9.4/include/stddef.h \
  stack/../sources/defines.h sources/CO_OD.h stack/CO_SDO.h \
  stack/CO_Emergency.h stack/CO_NMT_Heartbeat.h stack/CO_SYNC.h \
