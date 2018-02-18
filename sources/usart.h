@@ -3,8 +3,6 @@
 
 #include "gpio.h"
 #include "defines.h"
-//#include "../stack/CO_driver.h"
-//#include "../CANopen.h"
 
 typedef struct{
 	uint32_t *global_pointer;
@@ -24,6 +22,7 @@ void usart_send_data(uint32_t USART, uint32_t *data, uint8_t lenth);
 void usart_send_byte(uint32_t USART, uint8_t data);
 void usart_send_string(uint32_t USART, char *BufferPtr, uint16_t Length);
 void my_usart_print_int(uint32_t usart, int value);
+void ftoa(float num, uint8_t *str, uint8_t precision);
 
 
 #endif

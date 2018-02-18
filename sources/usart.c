@@ -7,13 +7,17 @@
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/cm3/nvic.h>
 #include "usart.h"
+#include "bq76pl455.h"
 #include "../stack/CO_driver.h"
 #include "../CANopen.h"
 extern CO_CANtx_t *txbuff;
 uint8_t testdata[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+uint16_t voltageArray[16];
 static char help_msg[] = "Battery management system: \n   Hardware version: 2.0 \n   Firmware version: 1.0 \n   CANopen objects: N/A \n";
 static uint8_t resiever[50];
 static uint8_t rec_len;
+static uint8_t resiever2[50];
+static uint8_t rec_len2;
 USART_t usart1;
 USART_t usart2;
 USART_t usart3;
@@ -110,57 +114,57 @@ bool usart_init(uint32_t usart, uint32_t baudrate,  bool remap)
 	return 1;
 }
 
-void usart1_isr(void)
+void usart2_isr(void)
 {
 	uint8_t tmp;
 
 	//Check if we were called because of RXNE. 
-	if (((USART_CR1(USART1) & USART_CR1_RXNEIE) != 0) &&
-			((USART_SR(USART1) & USART_SR_RXNE) != 0)) {
+	if (((USART_CR1(USART2) & USART_CR1_RXNEIE) != 0) &&
+			((USART_SR(USART2) & USART_SR_RXNE) != 0)) {
 
 		/* Retrieve the data from the peripheral. */
-		tmp = usart_recv(USART1);
+		tmp = usart_recv(USART2);
 		if (tmp == '\n')
 		{
-			resiever[rec_len++] = 0;	/* Make null-terminated string */
-			process_command(resiever);
-			rec_len = 0;
+			resiever2[rec_len2++] = 0;	/* Make null-terminated string */
+			process_command(resiever2);
+			rec_len2 = 0;
 		}else{
-			resiever[rec_len++] = tmp;
+			resiever2[rec_len2++] = tmp;
 		}
 
 		/*USART_CR1(USART1) &= ~USART_CR1_RXNEIE;*/
 	}
 	//Check if we were called because of TXE. 
-	if (((USART_CR1(USART1) & USART_CR1_TXEIE) != 0) &&
-			((USART_SR(USART1) & USART_SR_TXE) != 0)) {
+	if (((USART_CR1(USART2) & USART_CR1_TXEIE) != 0) &&
+			((USART_SR(USART2) & USART_SR_TXE) != 0)) {
 		/*Check the count of non-sended words*/	
-		if (usart1.lenth != 0){
+		if (usart2.lenth != 0){
 			/*send bytes until it will be send*/
-			if (usart1.byte_counter-- != 0){
-				usart_send(USART1, *usart1.data_pointer++);
+			if (usart2.byte_counter-- != 0){
+				usart_send(USART2, *usart2.data_pointer++);
 			}else{
-				if(--usart1.lenth !=0){
+				if(--usart2.lenth !=0){
 					/*Reconfig usarts pointers and byte array*/
-					usart1.byte_counter = 3;
-					usart1.global_pointer++;
-					usart1.data1 = (*usart1.global_pointer >> 24) & 0xff;
-					usart1.data2 = (*usart1.global_pointer >> 16) & 0xff;
-					usart1.data3 = (*usart1.global_pointer >> 8) & 0xff;
-					usart1.data4 = (*usart1.global_pointer) & 0xff;
-					usart1.data_pointer = &usart1.data1;
-					usart_send(USART1, *usart1.data_pointer++);
+					usart2.byte_counter = 3;
+					usart2.global_pointer++;
+					usart2.data1 = (*usart2.global_pointer >> 24) & 0xff;
+					usart2.data2 = (*usart2.global_pointer >> 16) & 0xff;
+					usart2.data3 = (*usart2.global_pointer >> 8) & 0xff;
+					usart2.data4 = (*usart2.global_pointer) & 0xff;
+					usart2.data_pointer = &usart2.data1;
+					usart_send(USART2, *usart1.data_pointer++);
 				}else{
 					//Disable the TXE interrupt as we don't need it anymore. 
-					USART_CR1(USART1) &= ~USART_CR1_TXEIE;
-					usart1.busy = 0;
+					USART_CR1(USART2) &= ~USART_CR1_TXEIE;
+					usart2.busy = 0;
 				}
 			}
 
 		}else{
 			//Disable the TXE interrupt as we don't need it anymore. 
-			USART_CR1(USART1) &= ~USART_CR1_TXEIE;
-			usart1.busy = 0;
+			USART_CR1(USART2) &= ~USART_CR1_TXEIE;
+			usart2.busy = 0;
 		}
 	}
 }
@@ -220,10 +224,26 @@ void process_command(char *cmd)
 		can_send_test(1, 0);
 		usart_send_string(USART1, "ONE go\n", 7);
 	}
-	if(strncmp(cmd, "TWO", 3) == 0)
+	if(strncmp(cmd, "get", 3) == 0)
 
 	{
-		/*can_send_test(2, 0);*/
+		uint16_t voltage;
+		float voltageInVolts;
+		uint8_t voltageString[5];
+		uint8_t num;
+		num = atoi(cmd + 4);
+		if (0 < num < 17 )
+		{
+			voltage = bq76_channel_read(num);
+			voltageInVolts = bq76_convert_to_volts(voltage);
+			ftoa(voltageInVolts, voltageString, 3);
+			usart_send_string(USART1, "Voltage: " , 9);
+			usart_send_string(USART1, voltageString , 5 );
+			usart_send_string(USART1, "\n" , 1);
+
+		}else{
+			usart_send_string(USART1, "Error\n", 6);
+		}
 	}
 
 	if(strncmp(cmd, "THREE", 5) == 0)
@@ -320,6 +340,39 @@ double atof(const char *s)
 	if (neg_flag == 1)
 		a = a*(-1);
 	return a;
+}
+
+void ftoa(float num, uint8_t *str, uint8_t precision)
+{
+    int intpart = num;
+    int intdecimal;
+    int i;
+    float decimal_part;
+    char decimal[20];
+
+    memset(str, 0x0, 20);
+    if (num > (-1) && num < (0))
+    {
+        strcat(str, "-");
+        itoa(num, str+1, 10);
+    }else{
+        itoa(num, str, 10);
+    }
+    strcat(str, ".");
+
+    decimal_part = num - intpart;
+    intdecimal = decimal_part * 1000000;
+
+    if(intdecimal < 0)
+    {
+        intdecimal = -intdecimal;
+    }
+    itoa(intdecimal, decimal, 10);
+    for(i =0;i < (precision - strlen(decimal));i++)
+    {
+        strcat(str, "0");
+    }
+    strcat(str, decimal);
 }
 void my_usart_print_int(uint32_t usart, int value)
 {
